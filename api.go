@@ -96,6 +96,12 @@ func VerifyLicense(w http.ResponseWriter, r *http.Request) {
 	var l lcs.License
 	err := storage.LicenseHandler.GetByToken(token, &l)
 	if err != nil {
+		if err.Error() == "license not found" {
+			ReturnResponse(w, 200, map[string]interface{}{
+				"valid": false,
+		})
+		return
+		}
 		logrus.WithError(err).Error("Error while getting license")
 		ReturnError(w, http.StatusInternalServerError, err.Error())
 		return
